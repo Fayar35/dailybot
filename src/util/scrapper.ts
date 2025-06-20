@@ -36,11 +36,6 @@ export const getUserScore = async (players: Player[][],
     let usersNotFound: Player[][] = players
 
     while(true) {
-        if (index % 20 == 0) {
-            console.log(`page ${index} reached, waiting 1 minute to not get rate limited`)
-            sleep(60000)
-        }
-
         console.log("...searching for players' scores page " + index)
         const response = await fetch("https://osu.ppy.sh/rankings/daily-challenge/" + day + "?page=" + index + "#scores")
         const html = await response.text()
@@ -50,12 +45,17 @@ export const getUserScore = async (players: Player[][],
 
         const scores = document.querySelectorAll(".ranking-page-table__row")
         if (scores.length === 0) {
-            usersNotFound.forEach((players, index) => {
-                players.forEach(player => {
-                    scoreNotFound[index](player)
+            console.log("score length == 0, response status : " + response.status)
+            if (response.status == 503) {
+                index--;
+            } else {   
+                usersNotFound.forEach((players, index) => {
+                    players.forEach(player => {
+                        scoreNotFound[index](player)
+                    })
                 })
-            })
-            return
+                return
+            }
         }
         
         for(let i = 0; i < scores.length; i++) {
