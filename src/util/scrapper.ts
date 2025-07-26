@@ -69,7 +69,7 @@ export const getUserScore = async (players: Player[][],
                             ranking: scoreElements[0].innerHTML.trim(),
                             accuracy: scoreElements[2].innerHTML.trim(),
                             tries: scoreElements[3].innerHTML.trim(),
-                            score: scoreElements[4].innerHTML.trim(),
+                            score: scoreElements[5].innerHTML.trim(),
                             player: null
                         }
                         

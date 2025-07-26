@@ -63,7 +63,7 @@ const fetchForTimeleft = async (timeleft: number) => {
 			scoresNotFound.push(((currentChannelIndex) => (player) => {
 				client.users.fetch(player.discord_id)
 				.then(user => {
-					channels[currentChannelIndex].send(`/!\\  ${user.toString()} did **NOT** play the daily challenge™ (yet)`)
+					channels[currentChannelIndex].send(`/!\\ faut jouer au jeu ${user.toString()}`)
 					.then(message => console.log(`Sent message: ${message.content}`))
 					.catch(console.error)
 				})
@@ -90,7 +90,7 @@ const fetchForTimeleft = async (timeleft: number) => {
 			scoresNotFound.push(((currentChannelIndex) => (player) => {
 				client.users.fetch(player.discord_id)
 				.then(user => {
-					channels[currentChannelIndex].send(`/!\\  ${user.toString()} did **NOT** play the daily challenge™ (yet)`)
+					channels[currentChannelIndex].send(`/!\\ ${user.toString()} did **NOT** play the daily challenge™ (yet)`)
 					.then(message => console.log(`Sent message: ${message.content}`))
 					.catch(console.error)
 				})
