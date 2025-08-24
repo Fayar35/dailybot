@@ -25,6 +25,7 @@ export class Player {
 export const getUserScore = async (players: Player[][], 
                                     scoreFound: ((player: Player, score: Score, index: number) => void)[], 
                                     scoreNotFound: ((player: Player) => void)[], 
+                                    websiteDownHandlers: (() => void)[],
                                     day?: String) => {
     if (day === undefined) {
         day = getCurrentDay()
@@ -48,6 +49,8 @@ export const getUserScore = async (players: Player[][],
             console.log("score length == 0, response status : " + response.status)
             if (response.status == 503) {
                 index--;
+            } else if (response.status == 403) {
+                websiteDownHandlers[index]()
             } else {   
                 usersNotFound.forEach((players, index) => {
                     players.forEach(player => {

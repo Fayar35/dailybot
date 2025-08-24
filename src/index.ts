@@ -48,6 +48,7 @@ const fetchForTimeleft = async (timeleft: number) => {
 	let scoresFound: ((player: Player, score: Score, index: number) => void)[] = []
 	let scoresNotFound: ((player: Player) => void)[] = []
 	let channelIndex = 0
+	let websiteDownHandlers: (() => void)[] = []
 
 	// server ffs
 	if (players0.length > 0) {
@@ -70,6 +71,12 @@ const fetchForTimeleft = async (timeleft: number) => {
 				.catch(console.error)
 			})(channelIndex))
 		}
+
+		websiteDownHandlers.push(((currentChannelIndex) => () => {
+			channels[currentChannelIndex].send(`Le site est down :wilted_rose:`)
+			.then(message => console.log(`Sent message: ${message.content}`))
+			.catch(console.error)
+		}) (channelIndex))
 
 		channelIndex += 1
 	}
@@ -98,10 +105,16 @@ const fetchForTimeleft = async (timeleft: number) => {
 			})(channelIndex))
 		}
 
+		websiteDownHandlers.push(((currentChannelIndex) => () => {
+			channels[currentChannelIndex].send(`Couldn't access the website :wilted_rose:`)
+			.then(message => console.log(`Sent message: ${message.content}`))
+			.catch(console.error)
+		}) (channelIndex))
+
 		channelIndex += 1
 	}
 
-	getUserScore(players, scoresFound, scoresNotFound).then(() => {
+	getUserScore(players, scoresFound, scoresNotFound, websiteDownHandlers).then(() => {
 		if (playersFound.length > 0 && streakChannelIndex !== -1) channels[streakChannelIndex].send(`${playersFound.map(p => p.username).join(", ")} played the daily. good.`)
 											.then(message => console.log(`Sent message: ${message.content}`))
 											.catch(console.error)
