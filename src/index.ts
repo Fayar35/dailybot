@@ -115,7 +115,7 @@ const fetchForTimeleft = async (timeleft: number) => {
 	}
 
 	getUserScore(players, scoresFound, scoresNotFound, websiteDownHandlers).then(() => {
-		if (playersFound.length > 0 && streakChannelIndex !== -1) channels[streakChannelIndex].send(`${playersFound.map(p => p.username).join(", ")} played the daily. good.`)
+		if (playersFound.length > 0 && streakChannelIndex !== -1) channels[streakChannelIndex].send(`${playersFound.map(p => p.username.replaceAll('_', '\\_').replaceAll('*', '\\*')).join(", ")} played the daily. good.`)
 											.then(message => console.log(`Sent message: ${message.content}`))
 											.catch(console.error)
 		}
