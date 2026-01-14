@@ -50,8 +50,10 @@ export const getUserScore = async (players: Player[][],
             if (response.status == 503) {
                 index--;
             } else if (response.status == 403) {
-                websiteDownHandlers[index]()
-            } else {   
+                websiteDownHandlers.forEach(handler => handler())
+                await new Promise(r => setTimeout(r, 600_000)); // 10 minutes
+                continue
+            } else {
                 usersNotFound.forEach((players, index) => {
                     players.forEach(player => {
                         scoreNotFound[index](player)

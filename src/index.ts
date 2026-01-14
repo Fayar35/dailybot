@@ -4,16 +4,12 @@ import config from '../config.json';
 import cron from 'node-cron';
 import { getUserScore, Score, type Player } from './util/scrapper';
 import { possibleTimeLeft, registerCommand } from './commands/register';
-import { unregisterCommand } from './commands/unregister';
+import { remove_player, unregisterCommand } from './commands/unregister';
 import { getParam } from './util/params';
 import { schedulingCommand } from './commands/scheduling';
 
 // create a new Client instance
 const client = new Client({intents: [GatewayIntentBits.Guilds]});
-
-function sleep(ms: number) {
-    return new Promise( resolve => setTimeout(resolve, ms) );
-}
 
 // listen for the client to be ready
 client.once(Events.ClientReady, async (c) => {
@@ -23,7 +19,7 @@ client.once(Events.ClientReady, async (c) => {
 		cron.schedule(`0 ${24-timeLeft} * * *`, async () => {
 			fetchForTimeleft(timeLeft)
 		}, { timezone: 'Etc/UTC' })
-	})		
+	})
 });
 
 const fetchForTimeleft = async (timeleft: number) => {
@@ -96,7 +92,13 @@ const fetchForTimeleft = async (timeleft: number) => {
 			})
 			scoresNotFound.push(((currentChannelIndex) => (player) => {
 				client.users.fetch(player.discord_id)
-				.then(user => {
+				.then(user => async () => {
+					const guild = await client.guilds.fetch(channel.guildId);
+					if (!guild.members.cache.has(user.id)) {
+						remove_player(channel.guildId, user.id)
+						return
+					}
+
 					channels[currentChannelIndex].send(`/!\\ ${user.toString()} did **NOT** play the daily challenge™ (yet)`)
 					.then(message => console.log(`Sent message: ${message.content}`))
 					.catch(console.error)
