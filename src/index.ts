@@ -92,15 +92,20 @@ const fetchForTimeleft = async (timeleft: number) => {
 			})
 			scoresNotFound.push(((currentChannelIndex) => (player) => {
 				client.users.fetch(player.discord_id)
-				.then(user => async () => {
-					const guild = await client.guilds.fetch(channel.guildId);
-					if (!guild.members.cache.has(user.id)) {
-						remove_player(channel.guildId, user.id)
-						return
-					}
-
-					channels[currentChannelIndex].send(`/!\\ ${user.toString()} did **NOT** play the daily challenge™ (yet)`)
-					.then(message => console.log(`Sent message: ${message.content}`))
+				.then(user => {
+					client.guilds.fetch(channel.guildId)
+					.then(guild => {
+						guild.members.fetch(user.id)
+						.then(member => {
+							channels[currentChannelIndex].send(`/!\\ ${user.toString()} did **NOT** play the daily challenge™ (yet)`)
+								.then(message => console.log(`Sent message: ${message.content}`))
+								.catch(console.error)
+						})
+						.catch(() => {
+							console.log(`removing player ${user.username} from guild ${guild.name}...`)
+							remove_player(guild.id, player.discord_id)
+						})
+					})
 					.catch(console.error)
 				})
 				.catch(console.error)
